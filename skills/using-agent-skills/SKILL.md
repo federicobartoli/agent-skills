@@ -1,6 +1,6 @@
 ---
 name: using-agent-skills
-description: Use when starting a session or when you need to discover which skill applies to the current task. This is the meta-skill that governs how all other skills are discovered and invoked.
+description: Use when starting or ending a session, when deciding whether to delegate to subagents, or when you need to discover which skill applies. Meta-skill that governs how all other skills are discovered and invoked.
 ---
 
 # Using Agent Skills
@@ -147,6 +147,65 @@ For a complete feature, the typical skill sequence is:
 ```
 
 Not every task needs every skill. A bug fix might only need: `debugging-and-error-recovery` → `test-driven-development` → `code-review-and-quality`.
+
+## Delegating to Background Tasks
+
+Most AI coding tools support running work in isolated contexts — called subagents (Claude Code), background agents (Cursor), or parallel flows (Windsurf). Use them to keep exploration out of the main context window.
+
+### When to Delegate
+
+| Task type | Approach | Why |
+|-----------|----------|-----|
+| Single file read or grep | Direct tool call | Background tasks add overhead for trivial lookups |
+| Multi-file investigation | Background task | Exploration generates tokens that pollute main context |
+| Independent test writing | Background task | Test written without knowledge of the fix is more robust |
+| Code review | Background task | Fresh context catches things a long session misses |
+| Parallel feature work | Multiple background tasks | Each works in isolation, results merge cleanly |
+
+For complex tasks, use a coordinator pattern: one lead agent breaks down the work and delegates to specialized workers, then synthesizes their results.
+
+### Writing Effective Delegation Prompts
+
+Give the background task enough context to work independently:
+
+```
+Good: "Investigate why the user registration endpoint returns 500 on
+duplicate emails. Check src/routes/auth.ts and src/services/user.ts.
+Report: the root cause, the exact file and line, and a suggested fix."
+
+Bad: "Look into the auth bug."
+```
+
+Include file paths, what you already know, and what specifically you need back.
+
+## Session Lifecycle
+
+### Starting a Session
+
+Before writing any code in a new session:
+
+1. **Orient** — read the git log and any progress notes to understand the current state
+2. **Verify** — run the test suite to confirm the codebase is healthy
+3. **Select** — identify the highest-priority task that isn't yet complete
+4. **Load context** — read the relevant spec, files, and patterns (see `context-engineering`)
+5. **Plan** — propose your approach before executing. Use plan mode if available, or emit an inline plan (see `context-engineering` Inline Planning Pattern). State assumptions explicitly so the user can redirect before work begins
+
+### Ending a Session
+
+Before closing a session:
+
+1. **Commit** — save all work with descriptive messages that capture decisions and reasoning, not just changes
+2. **Update** — write progress notes to a file (not just conversation) noting what's done, what's in progress, and what's next
+3. **Verify** — ensure tests pass and the codebase is in a working state
+
+### When to Suggest Ending a Session
+
+The agent cannot clear its own context. When these signs appear, commit all work and suggest the user start a fresh session:
+
+- Output quality is degrading despite corrections
+- The context is cluttered with failed approaches
+- The current task is complete and the next task is unrelated
+- Investigation is stuck — a fresh session with a better prompt often unblocks
 
 ## Quick Reference
 

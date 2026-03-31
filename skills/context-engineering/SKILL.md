@@ -250,6 +250,43 @@ PLAN:
 
 This catches wrong directions before you've built on them. It's a 30-second investment that prevents 30-minute rework.
 
+## Context Budget Management
+
+Context engineering is not just about *what* to load — it's about managing the context window as a finite resource. Performance degrades as context fills, and a cluttered context leads to missed instructions, hallucinated APIs, and repeated mistakes.
+
+The agent cannot clear or compact its own context — these are user-only commands. Most AI coding tools handle auto-compaction in the background, but output quality can degrade well before compaction triggers.
+
+### Isolate Heavy Work in Background Tasks
+
+The primary tool for managing context growth is running work in isolated contexts (called subagents, background agents, or parallel flows depending on the tool). See `using-agent-skills` for the full delegation decision table. From a context engineering perspective, the key principle is: exploration and research stay out of the main context window.
+
+Match effort to task complexity:
+
+```
+Simple fact-finding          → Direct tool call (grep, file read)
+Focused investigation        → Single background task
+Multi-file comparison        → A few background tasks with divided responsibilities
+Complex research/refactoring → Multiple background tasks with clearly scoped prompts
+```
+
+### Recognize Context Degradation
+
+When output quality drops — hallucinated APIs, ignored conventions, repeated mistakes — the context is likely saturated:
+
+1. **Commit all current work** with descriptive messages that capture *why*, not just *what*
+2. **Write a progress summary** to a file noting what's done and what remains
+3. **Suggest the user start a fresh session**
+
+### Carry State in Artifacts, Not Conversation
+
+Conversation does not survive session boundaries or compaction. Persist state to artifacts:
+
+- **Commits** with descriptive messages explaining what's done and what remains
+- **Progress files** if the project uses a progress tracking system
+- **A working codebase** — the next session should be able to run tests immediately
+
+For the full session start/end workflow, see the Session Lifecycle section in `using-agent-skills`.
+
 ## Anti-Patterns
 
 | Anti-Pattern | Problem | Fix |
