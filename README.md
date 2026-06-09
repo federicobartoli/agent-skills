@@ -184,6 +184,7 @@ The commands above are entry points. The pack includes 24 skills total — 23 li
 | [doubt-driven-development](skills/doubt-driven-development/SKILL.md) | Adversarial fresh-context review of every non-trivial decision in-flight - CLAIM → EXTRACT → DOUBT → RECONCILE → STOP, with optional user-authorized cross-model escalation | Stakes are high (production, security, irreversible), working in unfamiliar code, or a confident output is cheaper to verify now than to debug later |
 | [frontend-ui-engineering](skills/frontend-ui-engineering/SKILL.md) | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility | Building or modifying user-facing interfaces |
 | [api-and-interface-design](skills/api-and-interface-design/SKILL.md) | Contract-first design, Hyrum's Law, One-Version Rule, error semantics, boundary validation | Designing APIs, module boundaries, or public interfaces |
+| [legacy-code-and-refactoring](skills/legacy-code-and-refactoring/SKILL.md) | Characterization tests, seams, sprout method, strangler fig - never refactor and change behavior in the same commit | Modifying untested or unfamiliar code, or tempted to rewrite from scratch |
 
 ### Verify - Prove it works
 
@@ -287,6 +288,7 @@ agent-skills/
 │   ├── frontend-ui-engineering/       #   Build
 │   ├── test-driven-development/       #   Build
 │   ├── api-and-interface-design/      #   Build
+│   ├── legacy-code-and-refactoring/   #   Build
 │   ├── browser-testing-with-devtools/ #   Verify
 │   ├── debugging-and-error-recovery/  #   Verify
 │   ├── code-review-and-quality/       #   Review
